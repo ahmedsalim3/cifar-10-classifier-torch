@@ -1,57 +1,84 @@
-# Repository Template [Edit this title]
+# CIFAR-10-Classifier
 
-:pencil2: Add description of the project here.
+This repository contains a machine learning project for classifying [CIFAR-10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html) images using CNN and VGG16 models. It includes code for model training, evaluation, and inference, as well as example scripts and pretrained model weights.
 
-## Requirements
+## How to Install
 
-:pencil2: What are the requirements to install and run the project.
+Install required dependencies using:
 
-## How to install
+```bash
+pip install -r requirements.txt
+```
 
-:pencil2: Add installation instructions here.
+## How to Run
 
-## How to run
+### Training a Model
 
-:pencil2: Add run instructions here. This includes necessary configurations as well as the commands used.
+To train a model, run:
 
-## Repo's directory structure
+```bash
+# Usage
+python3 -m src.train_model [-h] --model {vgg16,cnn} [--epochs EPOCHS] [--batch_size BATCH_SIZE]
+```
 
-The directory structure below shows the nature of files/directories used in this repo.
+Example with transfer learning:
+
+```bash
+python3 -m src.train_model --model vgg16 --epochs 30 --batch_size 64
+```
+
+### Running Inference
+
+To run inference on a trained model:
+
+```bash
+# Usage
+python3 -m src.inference [-h] --model {cnn,vgg} --image_path IMAGE_PATH [--requests]
+```
+
+Use the `--requests` flag when providing a URL as the image path:
+    
+```sh
+python3 -m src.inference --model cnn --image_path "https://media.istockphoto.com/id/521697371/photo/brown-pedigree-horse.jpg?s=612x612&w=0&k=20&c=x19W0K7iuQhQn_7l3wRqWq-zsbo0oRA33C3OF4nooL0=" --requests
+```
+
+**Note:** Due to the large size of the VGG16 model, we haven't included the weights in this repo, but we've included the [CNN weights](./models/cnn_classifier.pth).
+
+## Repository Structure
+
+The directory structure below shows the organization of files/directories in this repo:
 
 ```sh
 template_repo
-├── CHANGELOG.md      <- Log of changes made
-│
+.
 ├── README.md
+├── requirements.txt
+│ 
+├── data
+│   ├── cifar-10-batches-py
+│   └── cifar-10-python.tar.gz
+│ 
+├── models
+│   ├── cnn_classifier.pth
+│   └── vgg16_classifier.pth
+│ 
+├── notebook
+│   └── inference.ipynb
+│ 
+├── results
+│   ├── cifar_samples.png
+│   ├── cnn
+│   └── vgg
+│ 
+├── scripts
+│   ├── inference.sh
+│   └── train.sh
 │
-├── .gitignore        <- Specifies intentionally untracked files to ignore by git
-│
-├── configs           <- Dir to store config files. Conda env, requirements.txt, etc.
-│
-├── data              <- Dir structure.
-│   ├── external      <- Data from third party sources
-│   │── interim       <- Intermediate data that has been transformed.
-│   ├── processed     <- The final, canonical datasets and results
-│   └── raw           <- The original, immutable data dump
-│
-├── docs              <- Dir to store documentation.
-│
-├── models            <- Trained and serialized models, model predictions, or model summaries
-├── notebooks         <- Dir to store Jupyter, R Markdown notebooks, etc.
-│
-├── src               <- Dir to store source code for this project
+└── src
+    ├── dataset.py
+    ├── inference.py
+    ├── models.py
+    ├── settings.py
+    ├── train_model.py
+    └── utils/
 ```
-
-## Team Structure and Contribution
-
-Use this space to write your team names and their contribution.
-
-## References
-
-Provide references of repositories, articles, other work used by your teams.
-
-[DO NOT REMOVE]
-
-Template repo derived from: http://drivendata.github.io/cookiecutter-data-science
-
-Template created by: @ahmeds-data @pebelone

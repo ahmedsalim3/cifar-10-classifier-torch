@@ -1,6 +1,0 @@
-site_name: Ahmed Salim's Project Template Site [Edit this]
-theme:
-  name: material
-
-nav:
-  - Home: index.md
