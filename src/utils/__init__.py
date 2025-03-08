@@ -17,4 +17,4 @@ def plot_images(data, num_imgs=4):
         axes[i].axis("off")
 
     plt.tight_layout()
-    plt.show()
+    return fig

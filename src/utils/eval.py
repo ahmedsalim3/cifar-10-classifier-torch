@@ -82,9 +82,7 @@ def plot_training_history(results):
     ax2.grid(True)
 
     plt.tight_layout()
-    save_path = os.path.join(settings.RESULTS_PATH, "training_history.png")
-    plt.savefig(save_path)
-    plt.show()
+    return fig
 
 
 def visualize_model_results(model, data_loader, device, class_names=None):
@@ -102,12 +100,12 @@ def visualize_model_results(model, data_loader, device, class_names=None):
 
     y_pred, y_true, y_probs = get_predictions(model, data_loader, device)
 
-    __confusion_matrix(y_true, y_pred, class_names)
-    __roc_curve(y_true, y_probs, class_names)
-    __pr_curve(y_true, y_probs, class_names)
-    __class_report(y_true, y_pred, class_names)
+    cm_fig = __confusion_matrix(y_true, y_pred, class_names)
+    roc_fig = __roc_curve(y_true, y_probs, class_names)
+    pr_fig = __pr_curve(y_true, y_probs, class_names)
+    class_report = __class_report(y_true, y_pred, class_names)
 
-    return {"y_pred": y_pred, "y_true": y_true, "y_probs": y_probs}
+    return {"cm_fig": cm_fig, "roc_fig": roc_fig, "pr_fig": pr_fig, "class_report": class_report}
 
 
 def plot_example_predictions(
@@ -147,8 +145,6 @@ def plot_example_predictions(
 
     fig = plt.figure(figsize=(images_per_row * 3, rows * 3))
 
-    save_path = os.path.join(settings.RESULTS_PATH, "example_predictions.png")
-
     for i in range(num_examples):
 
         ax = fig.add_subplot(rows, images_per_row, i + 1)
@@ -171,8 +167,7 @@ def plot_example_predictions(
         ax.axis("off")
 
     plt.tight_layout()
-    plt.savefig(save_path)
-    plt.show()
+    return fig
 
 
 def __confusion_matrix(y_true, y_pred, class_names=None):
@@ -190,21 +185,19 @@ def __confusion_matrix(y_true, y_pred, class_names=None):
     cm = metrics.confusion_matrix(y_true, y_pred)
     # normalized confusion matrix
     cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
-    save_path = os.path.join(settings.RESULTS_PATH, "cm.png")
 
     if class_names is None:
         class_names = [str(i) for i in range(cm.shape[0])]
 
-    # plt.figure(figsize=(10, 8))
+    # fig = plt.figure(figsize=(10, 8))
     # sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
     # plt.xlabel('Predicted')
     # plt.ylabel('True')
     # plt.title('Confusion Matrix')
     # plt.tight_layout()
-    # plt.savefig(save_path)
     # plt.show()
 
-    plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=(10, 8))
     sns.heatmap(
         cm_norm,
         annot=True,
@@ -217,10 +210,7 @@ def __confusion_matrix(y_true, y_pred, class_names=None):
     plt.ylabel("True")
     plt.title("Normalized Confusion Matrix")
     plt.tight_layout()
-    plt.savefig(save_path)
-    plt.show()
-
-    return cm
+    return fig
 
 
 def __roc_curve(y_true, y_probs, class_names=None):
@@ -252,7 +242,7 @@ def __roc_curve(y_true, y_probs, class_names=None):
         fpr[i], tpr[i], _ = metrics.roc_curve(y_true_bin[:, i], y_probs[:, i])
         roc_auc[i] = metrics.auc(fpr[i], tpr[i])
 
-    plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=(10, 8))
     colors = cycle(
         [
             "blue",
@@ -267,7 +257,6 @@ def __roc_curve(y_true, y_probs, class_names=None):
             "cyan",
         ]
     )
-    save_path = os.path.join(settings.RESULTS_PATH, "roc_curves.png")
 
     for i, color in zip(range(n_classes), colors):
         plt.plot(
@@ -286,10 +275,8 @@ def __roc_curve(y_true, y_probs, class_names=None):
     plt.title("Receiver Operating Characteristic (ROC)")
     plt.legend(loc="lower right")
     plt.tight_layout()
-    plt.savefig(save_path)
-    plt.show()
 
-    return roc_auc
+    return fig
 
 
 def __pr_curve(y_true, y_probs, class_names=None):
@@ -323,7 +310,7 @@ def __pr_curve(y_true, y_probs, class_names=None):
         )
         avg_precision[i] = np.mean(precision[i])
 
-    plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=(10, 8))
     colors = cycle(
         [
             "blue",
@@ -338,7 +325,6 @@ def __pr_curve(y_true, y_probs, class_names=None):
             "cyan",
         ]
     )
-    save_path = os.path.join(settings.RESULTS_PATH, "pr_curves.png")
 
     for i, color in zip(range(n_classes), colors):
         plt.plot(
@@ -356,10 +342,8 @@ def __pr_curve(y_true, y_probs, class_names=None):
     plt.title("Precision-Recall Curve")
     plt.legend(loc="lower left")
     plt.tight_layout()
-    plt.savefig(save_path)
-    plt.show()
 
-    return precision, recall
+    return fig
 
 
 def __class_report(y_true, y_pred, class_names=None):
